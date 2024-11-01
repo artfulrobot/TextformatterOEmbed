@@ -1,8 +1,9 @@
 <?php
+namespace ProcessWire;
 
 // Don't compile included libraries
 // http://processwire.com/blog/posts/processwire-3.0.43-core-updates/#new-filecompiler-options
-require_once(/*NoCompile*/__DIR__ . '/vendor/autoload.php');
+require_once(/*NoCompile*/\ProcessWire\wire("config")->paths->root . 'site/modules/TextformatterOEmbed' . '/vendor/autoload.php');
 
 /**
  * ProcessWire Textformatter-oEmbed
@@ -25,9 +26,9 @@ class TextformatterOEmbed extends Textformatter implements ConfigurableModule {
 	public static function getModuleInfo() {
 		
 		return array(
-			'title' => __('Textformatter OEmbed', __FILE__), 
+			'title' => __('Textformatter OEmbed', \ProcessWire\wire("config")->paths->root . 'site/modules/TextformatterOEmbed/TextformatterOEmbed.module'), 
 			'version' => 202, 
-			'summary' => __('Enter a full Link (i.e <a href="https://twitter.com/neuwaerts_de/status/474431534124892160">https://twitter.com/neuwaerts_de/status/474431534124892160</a>) to a post or video at one of the supported services and it will automatically be converted to an embedded item. This formatter is intended to be run on trusted input.', __FILE__),
+			'summary' => __('Enter a full Link (i.e <a href="https://twitter.com/neuwaerts_de/status/474431534124892160">https://twitter.com/neuwaerts_de/status/474431534124892160</a>) to a post or video at one of the supported services and it will automatically be converted to an embedded item. This formatter is intended to be run on trusted input.', \ProcessWire\wire("config")->paths->root . 'site/modules/TextformatterOEmbed/TextformatterOEmbed.module'),
 			'author' => 'Felix Wahner',
 			'requires' => array('PHP>=5.5.0'),
 			'href' => 'http://modules.processwire.com/modules/textformatter-oembed/'
@@ -112,50 +113,52 @@ class TextformatterOEmbed extends Textformatter implements ConfigurableModule {
 	 */
 	protected function getEmbedCode( $url ) {
 
-		$db = wire('db'); 
+		$db = $this->database;
 
-		$embedCode = null;
-
-		$itemID = $db->escape_string( $url ); 
-		$result = $db->query("SELECT embed_code, item_service, item_type FROM " . self::dbTableName . " WHERE item_id='$itemID'"); 
-
-		if($result->num_rows) {
-			list($embedCode, $itemService, $itemType) = $result->fetch_row(); 
-		} else {
+		$stmt = $db->prepare("SELECT embed_code, item_service, item_type FROM "
+			. self::dbTableName . " WHERE item_id = :item_id");
+    $stmt->execute([':item_id' => $url]);
+		$row = $stmt->fetch(\PDO::FETCH_ASSOC);
+		if( $row ) {
+			['embed_code' => $embed_code, 'item_service' => $item_service, 'item_type' => $item_type] = $row;
+		}
+		else {
 			$embed = $this->essence->extract( $url , [
-			    'maxwidth' => $this->maxWidth,
-			    'maxheight' => $this->maxHeight
+				'maxwidth' => $this->maxWidth,
+				'maxheight' => $this->maxHeight
 			]);
 
 			if ($embed === NULL){
-			     return;
+				return;
 			}
 
-			$embedCode = $embed->html;
+			$item_service = strtolower($embed->providerName);
+			$item_type = strtolower($embed->type);
+			$embed_code = $embed->html;
 
-			if( !$embedCode ) return;
-			
-			$itemType = strtolower($embed->type);
-			$itemService = strtolower($db->escape_string($embed->providerName));
+			if( !$embed_code ) return;
 
-			$sql = 	"INSERT INTO " . self::dbTableName . " SET " . 
-					"item_id='$itemID', " .
-					"item_service='$itemService', "  .
-					"item_type='$itemType', "  .
-					"embed_code='" . $db->escape_string($embedCode) . "', " . 
-					"created=NOW() ";
-
-			$db->query($sql);
-
-			$result->free();
-
+      $table = self::dbTableName;
+			$stmt	=	$db->prepare(<<<SQL
+				INSERT INTO $table
+				SET	item_id=:url,
+				item_service=:item_service,
+				item_type=:item_type,
+				embed_code=:embed_code,
+				created=NOW();
+			SQL);
+			$stmt->execute([
+				':url' => $url,
+				':item_service' => $item_service,
+				':item_type' => $item_type,
+				':embed_code' => $embed_code,
+			]);
 		}
 
 		// wrap it like it's hot.
-		$embedCode = $this->addWrapper($embedCode, $itemService, $itemType);
+		$embed_code = $this->addWrapper($embed_code, $item_service, $item_type);
 
-		return $embedCode; 
-
+		return $embed_code; 
 	}
 
 	/*
@@ -168,7 +171,7 @@ class TextformatterOEmbed extends Textformatter implements ConfigurableModule {
 		$retVal = [];
 
 		try {
-			$addedProviders = (array)json_decode($this->customProviders, true);
+			$addedProviders = (array)json_decode($this->customProviders ?? '[]', true);
 		} catch(\Error $e) {
 			//
 		}
@@ -177,7 +180,7 @@ class TextformatterOEmbed extends Textformatter implements ConfigurableModule {
 			foreach ($addedProviders as $key => $value) {
 				if(array_key_exists($key, $retVal)) continue;
 				try {
-					$retVal[$key] = \Essence\Container::unique(function($C) {
+					$retVal[$key] = \Essence\Di\Container::unique(function($C) use ($value) {
 				        return $C->get('OEmbedProvider')->setEndpoint(
 				            str_replace('%s', ':url', $value['endpoint'])
 				        );
@@ -308,11 +311,11 @@ class TextformatterOEmbed extends Textformatter implements ConfigurableModule {
 		$inputfields->add($f);
 
 		if(wire('input')->post('clearCache')) {
-			wire('db')->query("DELETE FROM " . self::dbTableName); 
+			wire('database')->query("DELETE FROM " . self::dbTableName); 
 			wire('modules')->message(__('Cache has been cleared.')); 
 		} else {
-			$result = wire('db')->query("SELECT COUNT(*) FROM " . self::dbTableName); 
-			list($n) = $result->fetch_row();
+			$result = wire('database')->query("SELECT COUNT(*) FROM " . self::dbTableName); 
+			$n = $result->fetchColumn();
 			$f = wire('modules')->get('InputfieldCheckbox');
 			$f->attr('name', 'clearCache'); 
 			$f->attr('value', 1); 
@@ -344,7 +347,7 @@ class TextformatterOEmbed extends Textformatter implements ConfigurableModule {
 				"created TIMESTAMP NOT NULL " . 
 				")";
 
-		wire('db')->query($sql);
+		wire('database')->query($sql);
 
 	}
 
@@ -353,7 +356,7 @@ class TextformatterOEmbed extends Textformatter implements ConfigurableModule {
 	 *
 	 */
 	public function ___uninstall() {
-		try { wire('db')->query("DROP TABLE " . self::dbTableName); } catch(Exception $e) { }
+		try { wire('database')->query("DROP TABLE " . self::dbTableName); } catch(\Exception $e) { }
 	}
 
 
@@ -369,7 +372,7 @@ class TextformatterOEmbed extends Textformatter implements ConfigurableModule {
 	}
 
 	public function get($key) {
-		$value = Wire::getFuel($key); 
+		$value = $this->wire($key);
 		if($value) return $value; 
 		return isset($this->data[$key]) ? $this->data[$key] : null;
 	}
@@ -384,3 +387,4 @@ class TextformatterOEmbed extends Textformatter implements ConfigurableModule {
 
 
 }
+
