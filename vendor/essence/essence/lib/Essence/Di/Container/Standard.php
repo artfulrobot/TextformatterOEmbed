@@ -775,7 +775,7 @@ class Standard extends Container {
 			'Spotify' => '~(open|play)\.spotify\.com/.+~i',
 			'TedOEmbed' => '~ted\.com/talks/.+~i',
 			'TedOpenGraph' => '~ted\.com/talks/.+~i',
-			'Twitter' => '~twitter\.com/[a-zA-Z0-9_]+/status(es)?/.+~i',
+			'Twitter' => '~(twitter|x)\.com/[a-zA-Z0-9_]+/status(es)?/.+~i',
 			'Ustream' => '~ustream\.(tv|com)/.+~i',
 			'Vhx' => '~vhx\.tv/.+~i',
 			'Viddler' => '~viddler\.com/.+~i',
