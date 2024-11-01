@@ -202,6 +202,12 @@ class ProvidersTest extends TestCase {
 				'multimediajournalism'
 			],
 			[
+				'DocumentCloud',
+				'https://www.documentcloud.org/documents/3108580-Department-of-Education-and-Skills-Strategy.html',
+				'provider_name',
+				'DocumentCloud'
+			],
+			[
 				'Dotsub',
 				'http://dotsub.com/view/9c63db2a-fa95-4838-8e6e-13deafe47f09',
 				'authorName',
@@ -212,6 +218,12 @@ class ProvidersTest extends TestCase {
 				'http://www.edocr.com/doc/176612/saint-petersburg-travellers-guide',
 				'authorName',
 				'info_769'
+			],
+			[
+				'FacebookPost',
+				'https://www.facebook.com/OfficialFireflySeries/posts/1525367254209816',
+				'provider_name',
+				'Facebook'
 			],
 			[
 				'Flickr',
@@ -269,7 +281,7 @@ class ProvidersTest extends TestCase {
 			],
 			[
 				'Imgur',
-				'http://imgur.com/gallery/FEiFVeO',
+				'https://imgur.com/gallery/FEiFVeO',
 				'providerName',
 				'Imgur'
 			],

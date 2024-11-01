@@ -1,9 +1,14 @@
 {
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "c59b2deba94a65f2e4b62175a2f7bbfc",
     "packages": [
         {
             "name": "essence/dom",
             "version": "1.0.0",
-            "version_normalized": "1.0.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/essence/dom.git",
@@ -15,9 +20,7 @@
                 "reference": "e5776d2286f4ccbd048d160c28ac77ccc6d68f3a",
                 "shasum": ""
             },
-            "time": "2015-07-23T20:33:17+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Essence\\Dom\\": "src"
@@ -45,12 +48,11 @@
                 "issues": "https://github.com/essence/dom/issues",
                 "source": "https://github.com/essence/dom/tree/1.0.0"
             },
-            "install-path": "../essence/dom"
+            "time": "2015-07-23T20:33:17+00:00"
         },
         {
             "name": "essence/essence",
             "version": "3.5.4",
-            "version_normalized": "3.5.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/essence/essence.git",
@@ -71,9 +73,7 @@
             "suggest": {
                 "ext-curl": "*"
             },
-            "time": "2021-01-21T09:58:10+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Essence\\": "lib/Essence"
@@ -103,12 +103,11 @@
                 "issues": "https://github.com/essence/essence/issues",
                 "source": "https://github.com/essence/essence/tree/3.5.4"
             },
-            "install-path": "../essence/essence"
+            "time": "2021-01-21T09:58:10+00:00"
         },
         {
             "name": "essence/http",
             "version": "1.0.0",
-            "version_normalized": "1.0.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/essence/http.git",
@@ -123,9 +122,7 @@
             "suggest": {
                 "ext-curl": "*"
             },
-            "time": "2015-07-23T20:33:50+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Essence\\Http\\": "src"
@@ -153,12 +150,11 @@
                 "issues": "https://github.com/essence/http/issues",
                 "source": "https://github.com/essence/http/tree/1.0.0"
             },
-            "install-path": "../essence/http"
+            "time": "2015-07-23T20:33:50+00:00"
         },
         {
             "name": "fg/parkour",
             "version": "1.1.1",
-            "version_normalized": "1.1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/felixgirault/parkour.git",
@@ -176,9 +172,7 @@
             "require-dev": {
                 "phpunit/phpunit": "4.3.*"
             },
-            "time": "2015-10-03T10:39:22+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Parkour\\": "lib"
@@ -207,9 +201,16 @@
                 "issues": "https://github.com/felixgirault/parkour/issues",
                 "source": "https://github.com/felixgirault/parkour/tree/1.1.1"
             },
-            "install-path": "../fg/parkour"
+            "time": "2015-10-03T10:39:22+00:00"
         }
     ],
-    "dev": true,
-    "dev-package-names": []
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.6.0"
 }
